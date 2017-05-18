@@ -39,6 +39,8 @@ class LaneLineFinder:
 		self.left_curverad = 0
 		self.right_curverad = 0
 
+		self.center_diff = 0
+
 	def add_and_update_averages(self, left_fit, right_fit):
 		window_size = 15
 
@@ -140,14 +142,16 @@ class LaneLineFinder:
 		right_fit = np.polyfit(righty, rightx, 2)
 
 		(left_fit_avg, right_fit_avg) = self.add_and_update_averages(left_fit, right_fit)
-		# print(left_fit_avg, right_fit_avg)
 
 		# Generate x and y values for plotting
 		ploty = np.linspace(0, image.shape[0]-1, image.shape[0] )
-		self.updateCurves(ploty, left_fit_avg, right_fit_avg)
 
 		left_fitx = left_fit_avg[0]*ploty**2 + left_fit_avg[1]*ploty + left_fit_avg[2]
 		right_fitx = right_fit_avg[0]*ploty**2 + right_fit_avg[1]*ploty + right_fit_avg[2]
+		center_fit = ((right_fitx - left_fitx) / 2) + left_fitx
+
+		self.updateCurvesAndCenter(ploty, left_fit_avg, right_fit_avg, center_fit[-1])
+		
 		if (visualize == 'colorize'):
 			out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
 			out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
@@ -165,6 +169,8 @@ class LaneLineFinder:
 			# Draw the lane onto the warped blank image
 			cv2.fillPoly(out_img, np.int_([pts]), (0,255, 0))
 
+			cv2.polylines(out_img, np.int32([np.stack((center_fit, ploty), axis=-1)]), 0, (0,0,0), 30)
+
 
 		return out_img
 
@@ -174,7 +180,7 @@ class LaneLineFinder:
 	def valid(self, left_fit, right_fit):
 		''' Todo '''
 
-	def updateCurves(self,ploty,left_fit,right_fit):
+	def updateCurvesAndCenter(self,ploty,left_fit,right_fit,center):
 		# Define y-value where we want radius of curvature
 		# I'll choose the maximum y-value, corresponding to the bottom of the image
 		y_eval = np.max(ploty)
@@ -204,8 +210,13 @@ class LaneLineFinder:
 		self.left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
 		self.right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
 
-	def getCurves(self):
-		return (self.left_curverad, self.right_curverad)
+		# get Center
+		camera_center = np.median(ploty) - 40
+		self.center_diff = ((camera_center - center / 2) * xm_per_pix)
+
+
+	def getCurvesAndCenter(self):
+		return (self.left_curverad, self.right_curverad, self.center_diff)
 
 if __name__ == '__main__':
 	import glob
@@ -234,5 +245,5 @@ if __name__ == '__main__':
 		pyplot.tight_layout()
 		pyplot.show()
 
-		# break
+		break
 

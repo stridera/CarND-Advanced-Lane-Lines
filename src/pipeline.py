@@ -10,13 +10,13 @@ from PerspectiveTransformer import PerspectiveTransformer
 from LaneLineFinder import LaneLineFinder
 
 class LaneFindingPipeline():
-	def __init__(self):
+	def __init__(self, finalOnly=True):
 		self.calibrator = CameraCalibrator()
 		self.calibrator.loadCalibrationValues()
 		self.thresholdProcessor = ThresholdProcessor()
 		self.perspectiveTransformer = PerspectiveTransformer()
 		self.laneLineFinder = LaneLineFinder()
-		self.frame = 0
+		self.frame = 5000 if finalOnly else 0
 
 	def overlay(self, image, ov):
 		if (image.ndim == 2):
@@ -89,9 +89,9 @@ class LaneFindingPipeline():
 			overlay = True
 
 		lines = self.laneLineFinder.findLaneLines(topdownView, visualization)
-		(left_curverad, right_curverad) = self.laneLineFinder.getCurves()
-		curveText = "Right Curve: {0:.2f}m, Left Curve: {0:.2f}m".format(left_curverad, right_curverad)
-
+		(left_curverad, right_curverad, center_diff) = self.laneLineFinder.getCurvesAndCenter()
+		curveText = "Right Curve: {0:.2f}m, Left Curve: {1:.2f}m".format(left_curverad, right_curverad)
+		centerText = "Vehicle is {0:.2f}m {1} of center".format(abs(center_diff), 'right' if center_diff > 0 else 'left')
 		''' Restore View '''
 		restoredView = self.perspectiveTransformer.reverse_perspective_transformation(lines)
 
@@ -101,6 +101,7 @@ class LaneFindingPipeline():
 			result = cv2.addWeighted(undistortedImage, 1, np.uint8(restoredView), 1, 0)
 
 		result = self.overlayText(result, curveText, (25, 25), 1, 3)
+		result = self.overlayText(result, centerText, (25, 60), 1, 3)
 
 		return self.overlayText(result, text, bottom_right)
 
@@ -120,7 +121,6 @@ def processTestImages(pipeline):
 		rgbImage = cv2.merge([r,g,b])
 
 		processedImage = pipeline.process(rgbImage)
-
 
 		# cv2.imwrite('../preprocessed_images/' + os.path.basename(imgPath), processedImage)
 
@@ -146,7 +146,7 @@ def processVideo(path, pipeline):
 
 def main():
 	''' Main Function '''
-	pipeline = LaneFindingPipeline()
+	pipeline = LaneFindingPipeline(False)
 
 	# processTestImages(pipeline)
 	processVideo("../project_video.mp4", pipeline)
