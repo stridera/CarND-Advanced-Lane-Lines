@@ -169,7 +169,10 @@ Code: [pipeline.py](https://github.com/stridera/CarND-Advanced-Lane-Lines/blob/m
 
 For a fun effect, I step through each stage in the first few frames of the video so you can see the processing that happens in each step.
 
-Here's a [link to my video result](./project_video-processed.mp4).  You can also watch it via this [Youtube Link](https://youtu.be/Q3bwqF0o728).
+Here's a [link to my video result](./project_video-processed.mp4).  
+
+You can also watch it via youtube:
+[![Final Video](http://img.youtube.com/vi/Q3bwqF0o728/0.jpg)](http://www.youtube.com/watch?v=Q3bwqF0o728)
 
 ---
 
