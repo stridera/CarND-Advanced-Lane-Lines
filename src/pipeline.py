@@ -105,7 +105,7 @@ class LaneFindingPipeline():
 
 		return self.overlayText(result, text, bottom_right)
 
-def processTestImages(pipeline):
+def processTestImages():
 	import glob
 	from matplotlib import pyplot
 
@@ -120,23 +120,28 @@ def processTestImages(pipeline):
 		b,g,r = cv2.split(image)
 		rgbImage = cv2.merge([r,g,b])
 
+		pipeline = LaneFindingPipeline(True)
 		processedImage = pipeline.process(rgbImage)
 
-		# cv2.imwrite('../preprocessed_images/' + os.path.basename(imgPath), processedImage)
+		r,g,b = cv2.split(processedImage)
+		bgrImage = cv2.merge([b,g,r])
+		cv2.imwrite('../output_images/' + os.path.basename(imgPath), bgrImage)
 
-		pyplot.subplot(121)
-		pyplot.axis('off')
-		pyplot.title(imgPath)
-		pyplot.imshow(rgbImage)
-		pyplot.subplot(122)
-		pyplot.title("{}, {}".format(cols*2, (i*2)))
-		pyplot.imshow(processedImage)
+		# pyplot.subplot(121)
+		# pyplot.axis('off')
+		# pyplot.title(imgPath)
+		# pyplot.imshow(rgbImage)
+		# pyplot.subplot(122)
+		# pyplot.title("{}, {}".format(cols*2, (i*2)))
+		# pyplot.imshow(processedImage)
 	
-		pyplot.tight_layout()
-		pyplot.show()
-		return
+		# pyplot.tight_layout()
+		# pyplot.show()
+		# return
 
-def processVideo(path, pipeline):
+def processVideo(path):
+	pipeline = LaneFindingPipeline(False)
+
 	filename, file_extension = os.path.splitext(path)
 	challenge_output_path = "{}-processed{}".format(filename, file_extension)
 	clip = VideoFileClip(path)
@@ -146,11 +151,9 @@ def processVideo(path, pipeline):
 
 def main():
 	''' Main Function '''
-	pipeline = LaneFindingPipeline(False)
-
-	# processTestImages(pipeline)
-	processVideo("../project_video.mp4", pipeline)
-	# processVideo("../short.mp4", pipeline)
+	processTestImages()
+	# processVideo("../project_video.mp4")
+	# processVideo("../short.mp4")
 
 
 
