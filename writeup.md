@@ -24,12 +24,12 @@ The goals / steps of this project are the following:
 
 [calibration1]: camera_fixed/calibration0.png "Undistorted 1"
 [calibration2]: camera_fixed/calibration1.png "Undistorted 2"
-[undistorted]: ./writeup_images/Undistorted.png "Distortion Correction Example"
-[thresholding]: ./writeup_images/Thresholding.png "Thresholding Example"
-[Perspective]:  ./writeup_images/PerspectiveTransformation.png "Perspective Transformation Example"
-[final1]: ./output_images/straight_lines1.jpg "Final Example 1"
-[final2]: ./output_images/straight_lines2.jpg "Final Example 2"
-[video1]: ./project_video-processed.mp4 "Video"
+[undistorted]: writeup_images/Undistorted.png "Distortion Correction Example"
+[thresholding]: writeup_images/Thresholding.png "Thresholding Example"
+[Perspective]:  writeup_images/PerspectiveTransformation.png "Perspective Transformation Example"
+[final1]: output_images/straight_lines1.jpg "Final Example 1"
+[final2]: output_images/straight_lines2.jpg "Final Example 2"
+[video1]: project_video-processed.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
